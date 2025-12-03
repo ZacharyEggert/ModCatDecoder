@@ -30,6 +30,7 @@ jobs:
           mkdir -p dist
           cp index.html dist/
           cp styles.css dist/
+          cp favicon.ico dist/
           cp -R public dist/public
           cp -R lib dist/lib
       - uses: actions/upload-pages-artifact@v3
