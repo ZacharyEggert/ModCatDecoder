@@ -1,4 +1,7 @@
-import { prs } from "./MODCAT_data.js";
+import { FileContentObject } from "./helpers";
+
+const CODE_FILE_PATH = "../codes/";
+const prs = FileContentObject.fromJSONCFolder(CODE_FILE_PATH);
 
 const codes = {
   modelCode: "",
@@ -38,44 +41,6 @@ const fields = {
   elec: "",
 };
 
-let {
-  model,
-  topWood,
-  frets,
-  topSpec,
-  topGrade,
-  neckWood,
-  neckCarve,
-  fingerboard,
-  inlay,
-  bridge,
-  color,
-  hardware,
-  treblepu,
-  middlepu,
-  basspu,
-  elec,
-} = fields;
-
-let {
-  modelCode,
-  topWoodCode,
-  fretsCode,
-  topSpecCode,
-  topGradeCode,
-  neckWoodCode,
-  neckCarveCode,
-  fingerboardCode,
-  inlayCode,
-  bridgeCode,
-  colorCode,
-  hardwareCode,
-  treblepuCode,
-  middlepuCode,
-  basspuCode,
-  elecCode,
-} = codes;
-
 type FieldKey = `${keyof typeof fields}Field`;
 
 const addValueToDOM = (field: FieldKey, value: string) => {
@@ -86,22 +51,22 @@ const addValueToDOM = (field: FieldKey, value: string) => {
 };
 
 const addFieldValuesToDOM = () => {
-  addValueToDOM("modelField", model);
-  addValueToDOM("topWoodField", topWood);
-  addValueToDOM("fretsField", frets);
-  addValueToDOM("topSpecField", topSpec);
-  addValueToDOM("topGradeField", topGrade);
-  addValueToDOM("neckWoodField", neckWood);
-  addValueToDOM("neckCarveField", neckCarve);
-  addValueToDOM("fingerboardField", fingerboard);
-  addValueToDOM("inlayField", inlay);
-  addValueToDOM("bridgeField", bridge);
-  addValueToDOM("colorField", color);
-  addValueToDOM("hardwareField", hardware);
-  addValueToDOM("treblepuField", treblepu);
-  addValueToDOM("middlepuField", middlepu);
-  addValueToDOM("basspuField", basspu);
-  addValueToDOM("elecField", elec);
+  addValueToDOM("modelField", fields.model);
+  addValueToDOM("topWoodField", fields.topWood);
+  addValueToDOM("fretsField", fields.frets);
+  addValueToDOM("topSpecField", fields.topSpec);
+  addValueToDOM("topGradeField", fields.topGrade);
+  addValueToDOM("neckWoodField", fields.neckWood);
+  addValueToDOM("neckCarveField", fields.neckCarve);
+  addValueToDOM("fingerboardField", fields.fingerboard);
+  addValueToDOM("inlayField", fields.inlay);
+  addValueToDOM("bridgeField", fields.bridge);
+  addValueToDOM("colorField", fields.color);
+  addValueToDOM("hardwareField", fields.hardware);
+  addValueToDOM("treblepuField", fields.treblepu);
+  addValueToDOM("middlepuField", fields.middlepu);
+  addValueToDOM("basspuField", fields.basspu);
+  addValueToDOM("elecField", fields.elec);
 };
 
 const getCodesFromString = (str: string) => {
@@ -117,49 +82,55 @@ const getCodesFromString = (str: string) => {
     console.log("MODCAT reconstructed to " + str);
   }
 
-  modelCode = str.substring(0, 2);
-  topWoodCode = str.substring(2, 3);
-  fretsCode = str.substring(3, 4);
-  topSpecCode = str.substring(4, 5);
-  topGradeCode = str.substring(5, 6);
-  neckWoodCode = str.substring(6, 7);
-  neckCarveCode = str.substring(7, 8);
-  fingerboardCode = str.substring(8, 9);
-  inlayCode = str.substring(9, 10);
-  bridgeCode = str.substring(10, 11);
-  if (colorCode != "____") {
-    colorCode = str.substring(11, 15).replace(/_/g, "");
+  codes.modelCode = str.substring(0, 2);
+  codes.topWoodCode = str.substring(2, 3);
+  codes.fretsCode = str.substring(3, 4);
+  codes.topSpecCode = str.substring(4, 5);
+  codes.topGradeCode = str.substring(5, 6);
+  codes.neckWoodCode = str.substring(6, 7);
+  codes.neckCarveCode = str.substring(7, 8);
+  codes.fingerboardCode = str.substring(8, 9);
+  codes.inlayCode = str.substring(9, 10);
+  codes.bridgeCode = str.substring(10, 11);
+  if (codes.colorCode != "____") {
+    codes.colorCode = str.substring(11, 15).replace(/_/g, "");
   }
-  hardwareCode = str.substring(15, 16);
-  treblepuCode = str.substring(16, 17);
-  middlepuCode = str.substring(17, 18);
-  basspuCode = str.substring(18, 19);
-  elecCode = str.substring(19, 20);
+  codes.hardwareCode = str.substring(15, 16);
+  codes.treblepuCode = str.substring(16, 17);
+  codes.middlepuCode = str.substring(17, 18);
+  codes.basspuCode = str.substring(18, 19);
+  codes.elecCode = str.substring(19, 20);
 };
 
-const getValue = (prefix: string, code: string, spec: string) =>
-  prs[(prefix + code) as keyof typeof prs]
-    ? prs[(prefix + code) as keyof typeof prs]
-    : `Couldn't find ${spec} for ${code}`;
+type PrefixKey = keyof typeof prs;
+type CodeKey = keyof (typeof prs)[PrefixKey];
+const getValue = (prefix: PrefixKey, code: CodeKey, label: string) =>
+  prs[prefix] && code in prs[prefix]
+    ? (prs[prefix][code] ?? `Couldn't find ${label} for ${code}`)
+    : `Couldn't find ${label} for ${code}`;
 
 //A bit clever but it makes the data obj more readable.
 const getFieldValues = () => {
-  model = getValue("model", modelCode, "Model");
-  topWood = getValue("topWood", topWoodCode, "Top Wood");
-  frets = getValue("frets", fretsCode, "Frets");
-  topSpec = getValue("topSpec", topSpecCode, "Top Spec");
-  topGrade = getValue("topGrade", topGradeCode, "Top Grade");
-  neckWood = getValue("neckWood", neckWoodCode, "Neck Wood");
-  neckCarve = getValue("neckCarve", neckCarveCode, "Neck Carve");
-  fingerboard = getValue("fingerboard", fingerboardCode, "Fingerboard Wood");
-  inlay = getValue("inlay", inlayCode, "Inlay");
-  bridge = getValue("bridge", bridgeCode, "Bridge");
-  color = getValue("color", colorCode, "Color");
-  hardware = getValue("hardware", hardwareCode, "Hardware");
-  treblepu = getValue("treblepu", treblepuCode, "Treble Pickup");
-  middlepu = getValue("middlepu", middlepuCode, "Middle Pickup");
-  basspu = getValue("basspu", basspuCode, "Bass Pickup");
-  elec = getValue("elec", elecCode, "Electronics");
+  fields.model = getValue("model", codes.modelCode, "Model");
+  fields.topWood = getValue("topWood", codes.topWoodCode, "Top Wood");
+  fields.frets = getValue("frets", codes.fretsCode, "Frets");
+  fields.topSpec = getValue("topSpec", codes.topSpecCode, "Top Spec");
+  fields.topGrade = getValue("topGrade", codes.topGradeCode, "Top Grade");
+  fields.neckWood = getValue("neckWood", codes.neckWoodCode, "Neck Wood");
+  fields.neckCarve = getValue("neckCarve", codes.neckCarveCode, "Neck Carve");
+  fields.fingerboard = getValue(
+    "fingerboard",
+    codes.fingerboardCode,
+    "Fingerboard Wood",
+  );
+  fields.inlay = getValue("inlay", codes.inlayCode, "Inlay");
+  fields.bridge = getValue("bridge", codes.bridgeCode, "Bridge");
+  fields.color = getValue("color", codes.colorCode, "Color");
+  fields.hardware = getValue("hardware", codes.hardwareCode, "Hardware");
+  fields.treblepu = getValue("treblepu", codes.treblepuCode, "Treble Pickup");
+  fields.middlepu = getValue("middlepu", codes.middlepuCode, "Middle Pickup");
+  fields.basspu = getValue("basspu", codes.basspuCode, "Bass Pickup");
+  fields.elec = getValue("elec", codes.elecCode, "Electronics");
 };
 // removes whitespace & replaces - with _
 const format = (text: string) =>
