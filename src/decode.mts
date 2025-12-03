@@ -1,7 +1,8 @@
 import { FileContentObject } from "./helpers.mjs";
 
-const CODE_FILE_PATH = "/public/codes/";
-const prs = FileContentObject.fromJSONCFolder(CODE_FILE_PATH);
+const JSONC_FOLDER_PATH = "/public/codes/";
+
+const decodedFileContent = FileContentObject.fromJSONCFolder(JSONC_FOLDER_PATH);
 
 const codes = {
   modelCode: "",
@@ -41,37 +42,35 @@ const fields = {
   elec: "",
 };
 
-type FieldKey = `${keyof typeof fields}Field`;
+type FieldId = `${keyof typeof fields}Field`;
 
-const addValueToDOM = (field: FieldKey, value: string) => {
-  const element = document.getElementById(field);
+const setDOMFieldContent = (fieldId: FieldId, content: string) => {
+  const element = document.getElementById(fieldId);
   if (element) {
-    element.innerHTML = value;
+    element.innerHTML = content;
   }
 };
 
-const addFieldValuesToDOM = () => {
-  addValueToDOM("modelField", fields.model);
-  addValueToDOM("topWoodField", fields.topWood);
-  addValueToDOM("fretsField", fields.frets);
-  addValueToDOM("topSpecField", fields.topSpec);
-  addValueToDOM("topGradeField", fields.topGrade);
-  addValueToDOM("neckWoodField", fields.neckWood);
-  addValueToDOM("neckCarveField", fields.neckCarve);
-  addValueToDOM("fingerboardField", fields.fingerboard);
-  addValueToDOM("inlayField", fields.inlay);
-  addValueToDOM("bridgeField", fields.bridge);
-  addValueToDOM("colorField", fields.color);
-  addValueToDOM("hardwareField", fields.hardware);
-  addValueToDOM("treblepuField", fields.treblepu);
-  addValueToDOM("middlepuField", fields.middlepu);
-  addValueToDOM("basspuField", fields.basspu);
-  addValueToDOM("elecField", fields.elec);
+const populateDOMFields = (_fields: typeof fields = fields) => {
+  setDOMFieldContent("modelField", _fields.model);
+  setDOMFieldContent("topWoodField", _fields.topWood);
+  setDOMFieldContent("fretsField", _fields.frets);
+  setDOMFieldContent("topSpecField", _fields.topSpec);
+  setDOMFieldContent("topGradeField", _fields.topGrade);
+  setDOMFieldContent("neckWoodField", _fields.neckWood);
+  setDOMFieldContent("neckCarveField", _fields.neckCarve);
+  setDOMFieldContent("fingerboardField", _fields.fingerboard);
+  setDOMFieldContent("inlayField", _fields.inlay);
+  setDOMFieldContent("bridgeField", _fields.bridge);
+  setDOMFieldContent("colorField", _fields.color);
+  setDOMFieldContent("hardwareField", _fields.hardware);
+  setDOMFieldContent("treblepuField", _fields.treblepu);
+  setDOMFieldContent("middlepuField", _fields.middlepu);
+  setDOMFieldContent("basspuField", _fields.basspu);
+  setDOMFieldContent("elecField", _fields.elec);
 };
 
-const getCodesFromString = (str: string) => {
-  str = format(str);
-
+const parseStringToCodes = (str: string) => {
   if (str.length < 20) {
     let numUnderscores = 20 - str.length;
     let underscores = "";
@@ -100,46 +99,51 @@ const getCodesFromString = (str: string) => {
   codes.middlepuCode = str.substring(17, 18);
   codes.basspuCode = str.substring(18, 19);
   codes.elecCode = str.substring(19, 20);
+  return codes;
 };
 
-type PrefixKey = keyof typeof prs;
-type CodeKey = keyof (typeof prs)[PrefixKey];
-const getValue = (prefix: PrefixKey, code: CodeKey, label: string) =>
-  prs[prefix] && code in prs[prefix]
-    ? (prs[prefix][code] ?? `Couldn't find ${label} for ${code}`)
-    : `Couldn't find ${label} for ${code}`;
+type FCOKey = keyof typeof decodedFileContent;
+type CodeKey = keyof (typeof decodedFileContent)[FCOKey];
+const getValue = (category: FCOKey, lookupKey: CodeKey, label: string) =>
+  decodedFileContent[category] && lookupKey in decodedFileContent[category]
+    ? (decodedFileContent[category][lookupKey] ??
+      `Couldn't find ${label} for ${lookupKey}`)
+    : `Couldn't find ${label} for ${lookupKey}`;
 
 //A bit clever but it makes the data obj more readable.
-const getFieldValues = () => {
-  fields.model = getValue("model", codes.modelCode, "Model");
-  fields.topWood = getValue("topWood", codes.topWoodCode, "Top Wood");
-  fields.frets = getValue("frets", codes.fretsCode, "Frets");
-  fields.topSpec = getValue("topSpec", codes.topSpecCode, "Top Spec");
-  fields.topGrade = getValue("topGrade", codes.topGradeCode, "Top Grade");
-  fields.neckWood = getValue("neckWood", codes.neckWoodCode, "Neck Wood");
-  fields.neckCarve = getValue("neckCarve", codes.neckCarveCode, "Neck Carve");
+const parseCodesToDetails = (_codes: typeof codes = codes) => {
+  fields.model = getValue("model", _codes.modelCode, "Model");
+  fields.topWood = getValue("topWood", _codes.topWoodCode, "Top Wood");
+  fields.frets = getValue("frets", _codes.fretsCode, "Frets");
+  fields.topSpec = getValue("topSpec", _codes.topSpecCode, "Top Spec");
+  fields.topGrade = getValue("topGrade", _codes.topGradeCode, "Top Grade");
+  fields.neckWood = getValue("neckWood", _codes.neckWoodCode, "Neck Wood");
+  fields.neckCarve = getValue("neckCarve", _codes.neckCarveCode, "Neck Carve");
   fields.fingerboard = getValue(
     "fingerboard",
-    codes.fingerboardCode,
+    _codes.fingerboardCode,
     "Fingerboard Wood",
   );
-  fields.inlay = getValue("inlay", codes.inlayCode, "Inlay");
-  fields.bridge = getValue("bridge", codes.bridgeCode, "Bridge");
-  fields.color = getValue("color", codes.colorCode, "Color");
-  fields.hardware = getValue("hardware", codes.hardwareCode, "Hardware");
-  fields.treblepu = getValue("treblepu", codes.treblepuCode, "Treble Pickup");
-  fields.middlepu = getValue("middlepu", codes.middlepuCode, "Middle Pickup");
-  fields.basspu = getValue("basspu", codes.basspuCode, "Bass Pickup");
-  fields.elec = getValue("elec", codes.elecCode, "Electronics");
+  fields.inlay = getValue("inlay", _codes.inlayCode, "Inlay");
+  fields.bridge = getValue("bridge", _codes.bridgeCode, "Bridge");
+  fields.color = getValue("color", _codes.colorCode, "Color");
+  fields.hardware = getValue("hardware", _codes.hardwareCode, "Hardware");
+  fields.treblepu = getValue("treblepu", _codes.treblepuCode, "Treble Pickup");
+  fields.middlepu = getValue("middlepu", _codes.middlepuCode, "Middle Pickup");
+  fields.basspu = getValue("basspu", _codes.basspuCode, "Bass Pickup");
+  fields.elec = getValue("elec", _codes.elecCode, "Electronics");
+  return fields;
 };
+
 // removes whitespace & replaces - with _
-const format = (text: string) =>
+const sanitizeString = (text: string) =>
   text.replace(/\s+/g, "").replace(/-/g, "_").toUpperCase();
 
 const decodeMODCAT = (input: string) => {
-  getCodesFromString(input);
-  getFieldValues();
-  addFieldValuesToDOM();
+  const sanitizedInput = sanitizeString(input);
+  const parsedCodes = parseStringToCodes(sanitizedInput);
+  const parsedFields = parseCodesToDetails(parsedCodes);
+  populateDOMFields(parsedFields);
 };
 
 document.getElementById("decodeButton")?.addEventListener("click", () => {
