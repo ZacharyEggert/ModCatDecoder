@@ -6,8 +6,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <script src="lib/helpers.js" ></script>
-    <script src="lib/decode.js" type="text/javascript"></script>
+    <script src="lib/helpers.mjs" type="module"></script>
+    <script src="lib/decode.mjs" type="module"></script>
     <link href="styles.css" rel="stylesheet">
 </head>
 <body>
@@ -17,7 +17,7 @@
 
     <table id="dataTable">
         <tr><td class="label" for="theMODCAT">Enter MODCAT: </td><td><input id="theMODCAT" size="30" type="text">
-            <input onClick="decodeMODCAT(document.getElementById('theMODCAT').value)" type="button" value="Decode MODCAT"></td></tr>
+            <input id="decodeButton" type="button" value="Decode MODCAT"></td></tr>
         <tr><td class="label">Model: </td><td><span id='modelField'></span></td></tr>
         <tr><td class="label">Top Wood: </td><td><span id='topWoodField'></span></td></tr>
         <tr><td class="label">Frets: </td><td><span id='fretsField'></span></td></tr>

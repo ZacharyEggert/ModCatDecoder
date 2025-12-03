@@ -1,6 +1,6 @@
-import { FileContentObject } from "./helpers";
+import { FileContentObject } from "./helpers.mjs";
 
-const CODE_FILE_PATH = "../codes/";
+const CODE_FILE_PATH = "/public/codes/";
 const prs = FileContentObject.fromJSONCFolder(CODE_FILE_PATH);
 
 const codes = {
@@ -141,3 +141,9 @@ const decodeMODCAT = (input: string) => {
   getFieldValues();
   addFieldValuesToDOM();
 };
+
+document.getElementById("decodeButton")?.addEventListener("click", () => {
+  const inputElement = document.getElementById("theMODCAT") as HTMLInputElement;
+  if (!inputElement) return;
+  decodeMODCAT(inputElement.value);
+});

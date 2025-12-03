@@ -1,4 +1,3 @@
-import { readFileSync } from "fs";
 export function StripJSONComments(jsonString: string): string {
   return jsonString
     .split("\n")
@@ -51,14 +50,20 @@ export class FileContentObject {
 
     Object.keys(fileContentObject).forEach((key) => {
       const filePath = `${resourcePath}${key}.jsonc`;
-      const fileContent = readFileSync(filePath, "utf-8");
 
-      const jsoncWithoutComments = StripJSONComments(fileContent);
-
-      //parse the cleaned JSON content
-      fileContentObject[key as keyof typeof fileContentObject] = JSON.parse(
-        jsoncWithoutComments,
-      ) as Record<string, string>;
+      //fetch the file content
+      fetch(filePath)
+        .then((response) => response.text())
+        .then((fileContent) => {
+          const jsoncWithoutComments = StripJSONComments(fileContent);
+          //parse the cleaned JSON content
+          fileContentObject[key as keyof typeof fileContentObject] = JSON.parse(
+            jsoncWithoutComments,
+          ) as Record<string, string>;
+        })
+        .catch((error) => {
+          console.error(`Error fetching or parsing ${filePath}:`, error);
+        });
     });
 
     return fileContentObject;

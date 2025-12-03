@@ -9,6 +9,7 @@
   },
 	"scripts": {
 		"build": "tsc",
-		"test": "bun test"
+		"test": "bun test",
+		"serve": "bunx http-server . -p 8080"
 	}
 }
