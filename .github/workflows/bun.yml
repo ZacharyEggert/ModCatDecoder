@@ -1,41 +1,50 @@
-# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
-
-name: Node.js CI
+name: Build and Deploy
 
 on:
   push:
-    branches: [ "ts-migrate" ]
+    branches: ["ts-migrate"]
   pull_request:
-    branches: [ "ts-migrate" ]
+    branches: ["ts-migrate"]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [18.x, 20.x, 22.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install
+      - run: bun run build
+      - name: Prepare site bundle
+        run: |
+          rm -rf dist
+          mkdir -p dist
+          cp index.html dist/
+          cp styles.css dist/
+          cp favicon.ico dist/
+          cp -R public dist/public
+          cp -R lib dist/lib
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: "dist"
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
-    - uses: actions/checkout@v4
-  # You may pin to the exact commit or the version.
-  # uses: oven-sh/setup-bun@735343b667d3e6f658f44d0eca948eb6282f2b76
-    - uses: oven-sh/setup-bun@v2
-      # with:
-    # The version of Bun to install. (e.g. "latest", "canary", "1.0.0", "1.0.x", <sha>)
-    # bun-version: # optional
-    # The version of Bun to install from file. (e.g. "package.json", ".bun-version", ".tool-versions")
-    # bun-version-file: # optional
-    # Override the URL to download Bun from. This skips version resolution and verifying AVX2 support.
-    # bun-download-url: # optional
-    # The URL of the package registry to use for installing Bun. Set the $BUN_AUTH_TOKEN environment variable to authenticate with the registry.
-    # registry-url: # optional
-    # The scope for authenticating with the package registry.
-    # scope: # optional
-    # Disable caching of bun executable.
-    # no-cache: # optional
-          
-    - run: bun run build
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
