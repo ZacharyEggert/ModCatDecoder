@@ -1,6 +1,7 @@
 import { FileContentObject } from "./helpers.mjs";
 
-const JSONC_FOLDER_PATH = "/public/codes/";
+// Use a relative path so GitHub Pages project sites resolve correctly
+const JSONC_FOLDER_PATH = "./public/codes/";
 
 const decodedFileContent = FileContentObject.fromJSONCFolder(JSONC_FOLDER_PATH);
 
