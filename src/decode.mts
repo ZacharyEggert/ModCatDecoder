@@ -21,7 +21,6 @@ const FieldKeys = [
   'basspu',
   'elec',
 ] as const;
-type FieldId = `${(typeof FieldKeys)[number]}Field`;
 type Fields = Record<(typeof FieldKeys)[number], string>;
 type FCOKey = keyof FileContentObject;
 type CodeKey = keyof FileContentObject[FCOKey];
