@@ -20,7 +20,9 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${geist.variable} bg-neutral-900`}>
-      <body>{children}</body>
+      <body className="w-full bg-linear-to-b from-neutral-900 to-neutral-600 text-white">
+        {children}
+      </body>
     </html>
   );
 }

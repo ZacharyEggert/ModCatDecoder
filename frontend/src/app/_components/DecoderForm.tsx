@@ -75,14 +75,14 @@ export default function DecoderForm() {
                     >
                       Enter MODCAT:
                     </th>
-                    <th scope="col" className="py-3.5 pr-4 pl-3 sm:pr-6">
+                    <th scope="col" className="flex py-3.5 pr-4 pl-3 sm:pr-6">
                       <input
                         id="theMODCAT"
                         size={30}
                         type="text"
                         value={input}
                         onChange={(event) => setInput(event.target.value)}
-                        className="rounded-md border-2 border-neutral-700 px-2 py-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-600 dark:bg-neutral-900 dark:text-white"
+                        className="flex-auto rounded-md border-2 border-neutral-700 px-2 py-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-600 dark:bg-neutral-900 dark:text-white"
                       />
                       <input
                         id="decodeButton"
