@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
     <script src="lib/helpers.mjs" type="module"></script>
     <script src="lib/decode.mjs" type="module"></script>
+		<script src="lib/index.mjs" type="module"></script>
     <link href="styles.css" rel="stylesheet">
 		<link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
@@ -17,7 +18,8 @@
     <h1>PRS MODCAT Decoder</h1>
 
     <table id="dataTable">
-        <tr><td class="label" for="theMODCAT">Enter MODCAT: </td><td><input id="theMODCAT" size="30" type="text">
+        <tr><td class="label" for="theMODCAT">Enter MODCAT: </td>
+					<td><input id="theMODCAT" size="30" type="text">
             <input id="decodeButton" type="button" value="Decode MODCAT"></td></tr>
         <tr><td class="label">Model: </td><td><span id='modelField'></span></td></tr>
         <tr><td class="label">Top Wood: </td><td><span id='topWoodField'></span></td></tr>
