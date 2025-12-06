@@ -83,5 +83,3 @@ describe('decodeMODCAT', () => {
     expect(domElements.colorField.innerHTML).toBe("Couldn't find Color for ");
   });
 });
-
-//TODO : Verify the AI generated tests
