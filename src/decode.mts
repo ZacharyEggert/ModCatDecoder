@@ -1,7 +1,7 @@
-import { FileContentObject } from "./helpers.mjs";
+import { FileContentObject } from './helpers.mjs';
 
 // Use a relative path so GitHub Pages project sites resolve correctly
-const JSONC_FOLDER_PATH = "./public/codes/";
+const JSONC_FOLDER_PATH = './public/codes/';
 
 let decodedFileContent = FileContentObject.fromJSONCFolder(JSONC_FOLDER_PATH);
 
@@ -10,49 +10,49 @@ export const __setDecodedFileContent = (content: typeof decodedFileContent) => {
 };
 
 const codes = {
-  modelCode: "",
-  topWoodCode: "",
-  fretsCode: "",
-  topSpecCode: "",
-  topGradeCode: "",
-  neckWoodCode: "",
-  neckCarveCode: "",
-  fingerboardCode: "",
-  inlayCode: "",
-  bridgeCode: "",
-  colorCode: "",
-  hardwareCode: "",
-  treblepuCode: "",
-  middlepuCode: "",
-  basspuCode: "",
-  elecCode: "",
+  modelCode: '',
+  topWoodCode: '',
+  fretsCode: '',
+  topSpecCode: '',
+  topGradeCode: '',
+  neckWoodCode: '',
+  neckCarveCode: '',
+  fingerboardCode: '',
+  inlayCode: '',
+  bridgeCode: '',
+  colorCode: '',
+  hardwareCode: '',
+  treblepuCode: '',
+  middlepuCode: '',
+  basspuCode: '',
+  elecCode: '',
 };
 
 const fields = {
-  model: "",
-  topWood: "",
-  frets: "",
-  topSpec: "",
-  topGrade: "",
-  neckWood: "",
-  neckCarve: "",
-  fingerboard: "",
-  inlay: "",
-  bridge: "",
-  color: "",
-  hardware: "",
-  treblepu: "",
-  middlepu: "",
-  basspu: "",
-  elec: "",
+  model: '',
+  topWood: '',
+  frets: '',
+  topSpec: '',
+  topGrade: '',
+  neckWood: '',
+  neckCarve: '',
+  fingerboard: '',
+  inlay: '',
+  bridge: '',
+  color: '',
+  hardware: '',
+  treblepu: '',
+  middlepu: '',
+  basspu: '',
+  elec: '',
 };
 
 export const __resetDecoderState = () => {
   Object.keys(codes).forEach((key) => {
-    codes[key as keyof typeof codes] = "";
+    codes[key as keyof typeof codes] = '';
   });
   Object.keys(fields).forEach((key) => {
-    fields[key as keyof typeof fields] = "";
+    fields[key as keyof typeof fields] = '';
   });
 };
 
@@ -66,33 +66,33 @@ const setDOMFieldContent = (fieldId: FieldId, content: string) => {
 };
 
 const populateDOMFields = (_fields: typeof fields = fields) => {
-  setDOMFieldContent("modelField", _fields.model);
-  setDOMFieldContent("topWoodField", _fields.topWood);
-  setDOMFieldContent("fretsField", _fields.frets);
-  setDOMFieldContent("topSpecField", _fields.topSpec);
-  setDOMFieldContent("topGradeField", _fields.topGrade);
-  setDOMFieldContent("neckWoodField", _fields.neckWood);
-  setDOMFieldContent("neckCarveField", _fields.neckCarve);
-  setDOMFieldContent("fingerboardField", _fields.fingerboard);
-  setDOMFieldContent("inlayField", _fields.inlay);
-  setDOMFieldContent("bridgeField", _fields.bridge);
-  setDOMFieldContent("colorField", _fields.color);
-  setDOMFieldContent("hardwareField", _fields.hardware);
-  setDOMFieldContent("treblepuField", _fields.treblepu);
-  setDOMFieldContent("middlepuField", _fields.middlepu);
-  setDOMFieldContent("basspuField", _fields.basspu);
-  setDOMFieldContent("elecField", _fields.elec);
+  setDOMFieldContent('modelField', _fields.model);
+  setDOMFieldContent('topWoodField', _fields.topWood);
+  setDOMFieldContent('fretsField', _fields.frets);
+  setDOMFieldContent('topSpecField', _fields.topSpec);
+  setDOMFieldContent('topGradeField', _fields.topGrade);
+  setDOMFieldContent('neckWoodField', _fields.neckWood);
+  setDOMFieldContent('neckCarveField', _fields.neckCarve);
+  setDOMFieldContent('fingerboardField', _fields.fingerboard);
+  setDOMFieldContent('inlayField', _fields.inlay);
+  setDOMFieldContent('bridgeField', _fields.bridge);
+  setDOMFieldContent('colorField', _fields.color);
+  setDOMFieldContent('hardwareField', _fields.hardware);
+  setDOMFieldContent('treblepuField', _fields.treblepu);
+  setDOMFieldContent('middlepuField', _fields.middlepu);
+  setDOMFieldContent('basspuField', _fields.basspu);
+  setDOMFieldContent('elecField', _fields.elec);
 };
 
 export const parseStringToCodes = (str: string) => {
   if (str.length < 20) {
     let numUnderscores = 20 - str.length;
-    let underscores = "";
+    let underscores = '';
     for (let i = 0; i < numUnderscores; i++) {
-      underscores += "_";
+      underscores += '_';
     }
-    str = [str.slice(0, 11), underscores, str.slice(11)].join("");
-    console.log("MODCAT reconstructed to " + str);
+    str = [str.slice(0, 11), underscores, str.slice(11)].join('');
+    console.log('MODCAT reconstructed to ' + str);
   }
 
   codes.modelCode = str.substring(0, 2);
@@ -105,8 +105,8 @@ export const parseStringToCodes = (str: string) => {
   codes.fingerboardCode = str.substring(8, 9);
   codes.inlayCode = str.substring(9, 10);
   codes.bridgeCode = str.substring(10, 11);
-  if (codes.colorCode != "____") {
-    codes.colorCode = str.substring(11, 15).replace(/_/g, "");
+  if (codes.colorCode != '____') {
+    codes.colorCode = str.substring(11, 15).replace(/_/g, '');
   }
   codes.hardwareCode = str.substring(15, 16);
   codes.treblepuCode = str.substring(16, 17);
@@ -126,32 +126,32 @@ const getValue = (category: FCOKey, lookupKey: CodeKey, label: string) =>
 
 //A bit clever but it makes the data obj more readable.
 export const parseCodesToDetails = (_codes: typeof codes = codes) => {
-  fields.model = getValue("model", _codes.modelCode, "Model");
-  fields.topWood = getValue("topWood", _codes.topWoodCode, "Top Wood");
-  fields.frets = getValue("frets", _codes.fretsCode, "Frets");
-  fields.topSpec = getValue("topSpec", _codes.topSpecCode, "Top Spec");
-  fields.topGrade = getValue("topGrade", _codes.topGradeCode, "Top Grade");
-  fields.neckWood = getValue("neckWood", _codes.neckWoodCode, "Neck Wood");
-  fields.neckCarve = getValue("neckCarve", _codes.neckCarveCode, "Neck Carve");
+  fields.model = getValue('model', _codes.modelCode, 'Model');
+  fields.topWood = getValue('topWood', _codes.topWoodCode, 'Top Wood');
+  fields.frets = getValue('frets', _codes.fretsCode, 'Frets');
+  fields.topSpec = getValue('topSpec', _codes.topSpecCode, 'Top Spec');
+  fields.topGrade = getValue('topGrade', _codes.topGradeCode, 'Top Grade');
+  fields.neckWood = getValue('neckWood', _codes.neckWoodCode, 'Neck Wood');
+  fields.neckCarve = getValue('neckCarve', _codes.neckCarveCode, 'Neck Carve');
   fields.fingerboard = getValue(
-    "fingerboard",
+    'fingerboard',
     _codes.fingerboardCode,
-    "Fingerboard Wood",
+    'Fingerboard Wood',
   );
-  fields.inlay = getValue("inlay", _codes.inlayCode, "Inlay");
-  fields.bridge = getValue("bridge", _codes.bridgeCode, "Bridge");
-  fields.color = getValue("color", _codes.colorCode, "Color");
-  fields.hardware = getValue("hardware", _codes.hardwareCode, "Hardware");
-  fields.treblepu = getValue("treblepu", _codes.treblepuCode, "Treble Pickup");
-  fields.middlepu = getValue("middlepu", _codes.middlepuCode, "Middle Pickup");
-  fields.basspu = getValue("basspu", _codes.basspuCode, "Bass Pickup");
-  fields.elec = getValue("elec", _codes.elecCode, "Electronics");
+  fields.inlay = getValue('inlay', _codes.inlayCode, 'Inlay');
+  fields.bridge = getValue('bridge', _codes.bridgeCode, 'Bridge');
+  fields.color = getValue('color', _codes.colorCode, 'Color');
+  fields.hardware = getValue('hardware', _codes.hardwareCode, 'Hardware');
+  fields.treblepu = getValue('treblepu', _codes.treblepuCode, 'Treble Pickup');
+  fields.middlepu = getValue('middlepu', _codes.middlepuCode, 'Middle Pickup');
+  fields.basspu = getValue('basspu', _codes.basspuCode, 'Bass Pickup');
+  fields.elec = getValue('elec', _codes.elecCode, 'Electronics');
   return fields;
 };
 
 // removes whitespace & replaces - with _
 export const sanitizeString = (text: string) =>
-  text.replace(/\s+/g, "").replace(/-/g, "_").toUpperCase();
+  text.replace(/\s+/g, '').replace(/-/g, '_').toUpperCase();
 
 export const decodeMODCAT = (input: string) => {
   const sanitizedInput = sanitizeString(input);
@@ -159,13 +159,3 @@ export const decodeMODCAT = (input: string) => {
   const parsedFields = parseCodesToDetails(parsedCodes);
   populateDOMFields(parsedFields);
 };
-
-if (typeof document !== "undefined") {
-  document.getElementById("decodeButton")?.addEventListener("click", () => {
-    const inputElement = document.getElementById(
-      "theMODCAT",
-    ) as HTMLInputElement;
-    if (!inputElement) return;
-    decodeMODCAT(inputElement.value);
-  });
-}
