@@ -54,11 +54,10 @@ export default function DecoderForm() {
   }, [decoder]);
 
   const handleDecode = useCallback(() => {
-    if (!input.trim()) {
-      return;
-    }
+    if (!input.trim()) return;
     decoder.decode(input);
-    setFields(decoder.getFields() as typeof fields);
+    const nextFields = decoder.getFields();
+    setFields({ ...nextFields }); // clone so React sees a new reference
   }, [decoder, input]);
 
   return (
