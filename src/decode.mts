@@ -1,161 +1,238 @@
 import { FileContentObject } from './helpers.mjs';
 
 // Use a relative path so GitHub Pages project sites resolve correctly
-const JSONC_FOLDER_PATH = './public/codes/';
+const DEFAULT_JSONC_FOLDER_PATH = './public/codes/';
 
-let decodedFileContent = FileContentObject.fromJSONCFolder(JSONC_FOLDER_PATH);
+const FieldKeys = [
+  'model',
+  'topWood',
+  'frets',
+  'topSpec',
+  'topGrade',
+  'neckWood',
+  'neckCarve',
+  'fingerboard',
+  'inlay',
+  'bridge',
+  'color',
+  'hardware',
+  'treblepu',
+  'middlepu',
+  'basspu',
+  'elec',
+] as const;
+type FieldId = `${(typeof FieldKeys)[number]}Field`;
+type Fields = Record<(typeof FieldKeys)[number], string>;
+type FCOKey = keyof FileContentObject;
+type CodeKey = keyof FileContentObject[FCOKey];
 
-export const __setDecodedFileContent = (content: typeof decodedFileContent) => {
-  decodedFileContent = content;
-};
+export interface DecoderOptions {
+  resourcePath?: string;
+}
+export class Decoder {
+  public resourcePath: string;
+  private decodedFileContent: FileContentObject = new FileContentObject();
+  private codes: Fields = {
+    model: '',
+    topWood: '',
+    frets: '',
+    topSpec: '',
+    topGrade: '',
+    neckWood: '',
+    neckCarve: '',
+    fingerboard: '',
+    inlay: '',
+    bridge: '',
+    color: '',
+    hardware: '',
+    treblepu: '',
+    middlepu: '',
+    basspu: '',
+    elec: '',
+  };
+  private fields: Fields = {
+    model: '',
+    topWood: '',
+    frets: '',
+    topSpec: '',
+    topGrade: '',
+    neckWood: '',
+    neckCarve: '',
+    fingerboard: '',
+    inlay: '',
+    bridge: '',
+    color: '',
+    hardware: '',
+    treblepu: '',
+    middlepu: '',
+    basspu: '',
+    elec: '',
+  };
 
-const codes = {
-  modelCode: '',
-  topWoodCode: '',
-  fretsCode: '',
-  topSpecCode: '',
-  topGradeCode: '',
-  neckWoodCode: '',
-  neckCarveCode: '',
-  fingerboardCode: '',
-  inlayCode: '',
-  bridgeCode: '',
-  colorCode: '',
-  hardwareCode: '',
-  treblepuCode: '',
-  middlepuCode: '',
-  basspuCode: '',
-  elecCode: '',
-};
-
-const fields = {
-  model: '',
-  topWood: '',
-  frets: '',
-  topSpec: '',
-  topGrade: '',
-  neckWood: '',
-  neckCarve: '',
-  fingerboard: '',
-  inlay: '',
-  bridge: '',
-  color: '',
-  hardware: '',
-  treblepu: '',
-  middlepu: '',
-  basspu: '',
-  elec: '',
-};
-
-export const __resetDecoderState = () => {
-  Object.keys(codes).forEach((key) => {
-    codes[key as keyof typeof codes] = '';
-  });
-  Object.keys(fields).forEach((key) => {
-    fields[key as keyof typeof fields] = '';
-  });
-};
-
-type FieldId = `${keyof typeof fields}Field`;
-
-const setDOMFieldContent = (fieldId: FieldId, content: string) => {
-  const element = document.getElementById(fieldId);
-  if (element) {
-    element.innerHTML = content;
+  constructor(options: DecoderOptions = {}) {
+    // No initialization needed for now
+    this.resourcePath = options.resourcePath || DEFAULT_JSONC_FOLDER_PATH;
+    this.loadResources();
   }
-};
 
-const populateDOMFields = (_fields: typeof fields = fields) => {
-  setDOMFieldContent('modelField', _fields.model);
-  setDOMFieldContent('topWoodField', _fields.topWood);
-  setDOMFieldContent('fretsField', _fields.frets);
-  setDOMFieldContent('topSpecField', _fields.topSpec);
-  setDOMFieldContent('topGradeField', _fields.topGrade);
-  setDOMFieldContent('neckWoodField', _fields.neckWood);
-  setDOMFieldContent('neckCarveField', _fields.neckCarve);
-  setDOMFieldContent('fingerboardField', _fields.fingerboard);
-  setDOMFieldContent('inlayField', _fields.inlay);
-  setDOMFieldContent('bridgeField', _fields.bridge);
-  setDOMFieldContent('colorField', _fields.color);
-  setDOMFieldContent('hardwareField', _fields.hardware);
-  setDOMFieldContent('treblepuField', _fields.treblepu);
-  setDOMFieldContent('middlepuField', _fields.middlepu);
-  setDOMFieldContent('basspuField', _fields.basspu);
-  setDOMFieldContent('elecField', _fields.elec);
-};
+  public async loadResources() {
+    this.decodedFileContent = FileContentObject.fromJSONCFolder(
+      this.resourcePath,
+    );
+  }
 
-export const parseStringToCodes = (str: string) => {
-  if (str.length < 20) {
-    let numUnderscores = 20 - str.length;
-    let underscores = '';
-    for (let i = 0; i < numUnderscores; i++) {
-      underscores += '_';
+  public __setDecodedFileContent(content: FileContentObject) {
+    this.decodedFileContent = content;
+  }
+
+  public decode(modcat: string) {
+    this.processMODCAT(modcat);
+    this.parseCodesToDetails();
+  }
+
+  public processMODCAT(modcat: string) {
+    this.parseStringToCodes(this.sanitizeString(modcat));
+  }
+
+  public sanitizeString(input: string) {
+    return input.replace(/\s+/g, '').replace(/-/g, '_').toUpperCase();
+  }
+
+  public parseStringToCodes(str: string) {
+    if (str.length < 20) {
+      let numUnderscores = 20 - str.length;
+      let underscores = '';
+      for (let i = 0; i < numUnderscores; i++) {
+        underscores += '_';
+      }
+      str = [str.slice(0, 11), underscores, str.slice(11)].join('');
+      console.log('MODCAT reconstructed to ' + str);
     }
-    str = [str.slice(0, 11), underscores, str.slice(11)].join('');
-    console.log('MODCAT reconstructed to ' + str);
+
+    this.codes.model = str.substring(0, 2);
+    this.codes.topWood = str.substring(2, 3);
+    this.codes.frets = str.substring(3, 4);
+    this.codes.topSpec = str.substring(4, 5);
+    this.codes.topGrade = str.substring(5, 6);
+    this.codes.neckWood = str.substring(6, 7);
+    this.codes.neckCarve = str.substring(7, 8);
+    this.codes.fingerboard = str.substring(8, 9);
+    this.codes.inlay = str.substring(9, 10);
+    this.codes.bridge = str.substring(10, 11);
+    if (this.codes.color !== '____') {
+      this.codes.color = str.substring(11, 15).replace(/_/g, '');
+    }
+    this.codes.hardware = str.substring(15, 16);
+    this.codes.treblepu = str.substring(16, 17);
+    this.codes.middlepu = str.substring(17, 18);
+    this.codes.basspu = str.substring(18, 19);
+    this.codes.elec = str.substring(19, 20);
   }
 
-  codes.modelCode = str.substring(0, 2);
-  codes.topWoodCode = str.substring(2, 3);
-  codes.fretsCode = str.substring(3, 4);
-  codes.topSpecCode = str.substring(4, 5);
-  codes.topGradeCode = str.substring(5, 6);
-  codes.neckWoodCode = str.substring(6, 7);
-  codes.neckCarveCode = str.substring(7, 8);
-  codes.fingerboardCode = str.substring(8, 9);
-  codes.inlayCode = str.substring(9, 10);
-  codes.bridgeCode = str.substring(10, 11);
-  if (codes.colorCode != '____') {
-    codes.colorCode = str.substring(11, 15).replace(/_/g, '');
+  public getValueFromCode = (
+    category: FCOKey,
+    lookupKey: CodeKey,
+    label?: string,
+  ) =>
+    this.decodedFileContent[category] &&
+    lookupKey in this.decodedFileContent[category]
+      ? (this.decodedFileContent[category][lookupKey] ??
+        `Couldn't find ${label ?? category} for "${lookupKey}"`)
+      : `Couldn't find ${label ?? category} for "${lookupKey}"`;
+
+  public parseCodesToDetails = (
+    codesObject: typeof this.codes = this.codes,
+  ) => {
+    this.fields.model = this.getValueFromCode(
+      'model',
+      codesObject.model,
+      'Model',
+    );
+    this.fields.topWood = this.getValueFromCode(
+      'topWood',
+      codesObject.topWood,
+      'Top Wood',
+    );
+    this.fields.frets = this.getValueFromCode(
+      'frets',
+      codesObject.frets,
+      'Frets',
+    );
+    this.fields.topSpec = this.getValueFromCode(
+      'topSpec',
+      codesObject.topSpec,
+      'Top Spec',
+    );
+    this.fields.topGrade = this.getValueFromCode(
+      'topGrade',
+      codesObject.topGrade,
+      'Top Grade',
+    );
+    this.fields.neckWood = this.getValueFromCode(
+      'neckWood',
+      codesObject.neckWood,
+      'Neck Wood',
+    );
+    this.fields.neckCarve = this.getValueFromCode(
+      'neckCarve',
+      codesObject.neckCarve,
+      'Neck Carve',
+    );
+    this.fields.fingerboard = this.getValueFromCode(
+      'fingerboard',
+      codesObject.fingerboard,
+      'Fingerboard Wood',
+    );
+    this.fields.inlay = this.getValueFromCode(
+      'inlay',
+      codesObject.inlay,
+      'Inlay',
+    );
+    this.fields.bridge = this.getValueFromCode(
+      'bridge',
+      codesObject.bridge,
+      'Bridge',
+    );
+    this.fields.color = this.getValueFromCode(
+      'color',
+      codesObject.color,
+      'Color',
+    );
+    this.fields.hardware = this.getValueFromCode(
+      'hardware',
+      codesObject.hardware,
+      'Hardware',
+    );
+    this.fields.treblepu = this.getValueFromCode(
+      'treblepu',
+      codesObject.treblepu,
+      'Treble Pickup',
+    );
+    this.fields.middlepu = this.getValueFromCode(
+      'middlepu',
+      codesObject.middlepu,
+      'Middle Pickup',
+    );
+    this.fields.basspu = this.getValueFromCode(
+      'basspu',
+      codesObject.basspu,
+      'Bass Pickup',
+    );
+    this.fields.elec = this.getValueFromCode(
+      'elec',
+      codesObject.elec,
+      'Electronics',
+    );
+  };
+
+  public getFields() {
+    return this.fields;
   }
-  codes.hardwareCode = str.substring(15, 16);
-  codes.treblepuCode = str.substring(16, 17);
-  codes.middlepuCode = str.substring(17, 18);
-  codes.basspuCode = str.substring(18, 19);
-  codes.elecCode = str.substring(19, 20);
-  return codes;
-};
 
-type FCOKey = keyof typeof decodedFileContent;
-type CodeKey = keyof (typeof decodedFileContent)[FCOKey];
-const getValue = (category: FCOKey, lookupKey: CodeKey, label: string) =>
-  decodedFileContent[category] && lookupKey in decodedFileContent[category]
-    ? (decodedFileContent[category][lookupKey] ??
-      `Couldn't find ${label} for ${lookupKey}`)
-    : `Couldn't find ${label} for ${lookupKey}`;
-
-//A bit clever but it makes the data obj more readable.
-export const parseCodesToDetails = (_codes: typeof codes = codes) => {
-  fields.model = getValue('model', _codes.modelCode, 'Model');
-  fields.topWood = getValue('topWood', _codes.topWoodCode, 'Top Wood');
-  fields.frets = getValue('frets', _codes.fretsCode, 'Frets');
-  fields.topSpec = getValue('topSpec', _codes.topSpecCode, 'Top Spec');
-  fields.topGrade = getValue('topGrade', _codes.topGradeCode, 'Top Grade');
-  fields.neckWood = getValue('neckWood', _codes.neckWoodCode, 'Neck Wood');
-  fields.neckCarve = getValue('neckCarve', _codes.neckCarveCode, 'Neck Carve');
-  fields.fingerboard = getValue(
-    'fingerboard',
-    _codes.fingerboardCode,
-    'Fingerboard Wood',
-  );
-  fields.inlay = getValue('inlay', _codes.inlayCode, 'Inlay');
-  fields.bridge = getValue('bridge', _codes.bridgeCode, 'Bridge');
-  fields.color = getValue('color', _codes.colorCode, 'Color');
-  fields.hardware = getValue('hardware', _codes.hardwareCode, 'Hardware');
-  fields.treblepu = getValue('treblepu', _codes.treblepuCode, 'Treble Pickup');
-  fields.middlepu = getValue('middlepu', _codes.middlepuCode, 'Middle Pickup');
-  fields.basspu = getValue('basspu', _codes.basspuCode, 'Bass Pickup');
-  fields.elec = getValue('elec', _codes.elecCode, 'Electronics');
-  return fields;
-};
-
-// removes whitespace & replaces - with _
-export const sanitizeString = (text: string) =>
-  text.replace(/\s+/g, '').replace(/-/g, '_').toUpperCase();
-
-export const decodeMODCAT = (input: string) => {
-  const sanitizedInput = sanitizeString(input);
-  const parsedCodes = parseStringToCodes(sanitizedInput);
-  const parsedFields = parseCodesToDetails(parsedCodes);
-  populateDOMFields(parsedFields);
-};
+  public __resetDecoderState() {
+    FieldKeys.forEach((key) => {
+      this.codes[key] = '';
+      this.fields[key] = '';
+    });
+  }
+}
