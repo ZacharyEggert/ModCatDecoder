@@ -4,7 +4,7 @@ import { FileContentObject } from '../src/helpers.mts';
 
 type DecodeModule = typeof import('../src/decode.mts');
 
-const VALID_MODCAT = '5MM2F-HVIB2_CC_NS-SK'; //TODO should be 5MM2F-HVIB2_CC_NS-SK - convert later
+const VALID_MODCAT = '5MM2F-HVIB2_CC_NS-SK';
 
 const domElements: Record<
   string,
