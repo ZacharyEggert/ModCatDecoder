@@ -27,6 +27,7 @@ type CodeKey = keyof FileContentObject[FCOKey];
 
 export interface DecoderOptions {
   resourcePath?: string;
+  skipLoadResources?: boolean;
 }
 export class Decoder {
   public resourcePath: string;
@@ -71,7 +72,9 @@ export class Decoder {
   constructor(options: DecoderOptions = {}) {
     // No initialization needed for now
     this.resourcePath = options.resourcePath || DEFAULT_JSONC_FOLDER_PATH;
-    this.loadResources();
+    if (!options.skipLoadResources) {
+      this.loadResources();
+    }
   }
 
   public async loadResources() {
