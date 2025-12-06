@@ -13,6 +13,7 @@
 		"serve": "bunx http-server . -p 8080",
 		"start": "cd ./frontend && bun run start",
 		"build-frontend": "bun run build && bun run --cwd ./frontend build",
-		"dev": "cd ./frontend && bun run dev"
+		"dev": "cd ./frontend && bun run dev",
+		"postinstall": "bun install --cwd ./frontend"
 	}
 }
