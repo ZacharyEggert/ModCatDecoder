@@ -33,23 +33,6 @@ export class DOMController {
       }
     }
   }
-
-  // exposed for testing purposes
-  public __setDecoder(decoder: Decoder) {
-    this.decoder = decoder;
-  }
-
-  public __setupEventListeners() {
-    this.setupEventListeners();
-  }
-
-  public __handleDecode() {
-    this.handleDecode();
-  }
-
-  public __updateDOMFields() {
-    this.updateDOMFields();
-  }
 }
 
 if (typeof document !== 'undefined') {
