@@ -26,8 +26,12 @@
     // "noUnusedParameters": false,
     "noPropertyAccessFromIndexSignature": false,
 
-		"outDir": "lib"
+    "outDir": "lib",
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+    "rootDir": "src"
   },
-	"include": ["src"],
-	"exclude": ["node_modules", "dist", "lib"]
+  "include": ["src"],
+  "exclude": ["node_modules", "dist", "lib"]
 }
