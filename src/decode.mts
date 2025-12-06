@@ -3,7 +3,11 @@ import { FileContentObject } from "./helpers.mjs";
 // Use a relative path so GitHub Pages project sites resolve correctly
 const JSONC_FOLDER_PATH = "./public/codes/";
 
-const decodedFileContent = FileContentObject.fromJSONCFolder(JSONC_FOLDER_PATH);
+let decodedFileContent = FileContentObject.fromJSONCFolder(JSONC_FOLDER_PATH);
+
+export const __setDecodedFileContent = (content: typeof decodedFileContent) => {
+  decodedFileContent = content;
+};
 
 const codes = {
   modelCode: "",
@@ -43,6 +47,15 @@ const fields = {
   elec: "",
 };
 
+export const __resetDecoderState = () => {
+  Object.keys(codes).forEach((key) => {
+    codes[key as keyof typeof codes] = "";
+  });
+  Object.keys(fields).forEach((key) => {
+    fields[key as keyof typeof fields] = "";
+  });
+};
+
 type FieldId = `${keyof typeof fields}Field`;
 
 const setDOMFieldContent = (fieldId: FieldId, content: string) => {
@@ -71,7 +84,7 @@ const populateDOMFields = (_fields: typeof fields = fields) => {
   setDOMFieldContent("elecField", _fields.elec);
 };
 
-const parseStringToCodes = (str: string) => {
+export const parseStringToCodes = (str: string) => {
   if (str.length < 20) {
     let numUnderscores = 20 - str.length;
     let underscores = "";
@@ -112,7 +125,7 @@ const getValue = (category: FCOKey, lookupKey: CodeKey, label: string) =>
     : `Couldn't find ${label} for ${lookupKey}`;
 
 //A bit clever but it makes the data obj more readable.
-const parseCodesToDetails = (_codes: typeof codes = codes) => {
+export const parseCodesToDetails = (_codes: typeof codes = codes) => {
   fields.model = getValue("model", _codes.modelCode, "Model");
   fields.topWood = getValue("topWood", _codes.topWoodCode, "Top Wood");
   fields.frets = getValue("frets", _codes.fretsCode, "Frets");
@@ -137,18 +150,22 @@ const parseCodesToDetails = (_codes: typeof codes = codes) => {
 };
 
 // removes whitespace & replaces - with _
-const sanitizeString = (text: string) =>
+export const sanitizeString = (text: string) =>
   text.replace(/\s+/g, "").replace(/-/g, "_").toUpperCase();
 
-const decodeMODCAT = (input: string) => {
+export const decodeMODCAT = (input: string) => {
   const sanitizedInput = sanitizeString(input);
   const parsedCodes = parseStringToCodes(sanitizedInput);
   const parsedFields = parseCodesToDetails(parsedCodes);
   populateDOMFields(parsedFields);
 };
 
-document.getElementById("decodeButton")?.addEventListener("click", () => {
-  const inputElement = document.getElementById("theMODCAT") as HTMLInputElement;
-  if (!inputElement) return;
-  decodeMODCAT(inputElement.value);
-});
+if (typeof document !== "undefined") {
+  document.getElementById("decodeButton")?.addEventListener("click", () => {
+    const inputElement = document.getElementById(
+      "theMODCAT",
+    ) as HTMLInputElement;
+    if (!inputElement) return;
+    decodeMODCAT(inputElement.value);
+  });
+}
