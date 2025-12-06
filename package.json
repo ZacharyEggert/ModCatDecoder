@@ -12,7 +12,7 @@
 		"test": "bun test",
 		"serve": "bunx http-server . -p 8080",
 		"start": "cd ./frontend && bun run start",
-		"build-frontend": "cd ./frontend && bun run build",
+		"build-frontend": "bun run build && bun run --cwd ./frontend build",
 		"dev": "cd ./frontend && bun run dev"
 	}
 }
