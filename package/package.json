@@ -1,7 +1,7 @@
 {
   "name": "prs-modcat-decoder",
   "private": false,
-	"version": "1.0.1",
+	"version": "1.0.0",
 	"type": "module",
 	"main": "lib/index.mjs",
 	"types": "lib/index.d.ts",
@@ -17,7 +17,8 @@
 		"test": "bun test",
 		"serve": "bunx http-server . -p 8080",
 		"start": "cd ./frontend && bun run start",
-		"build-frontend": "bun install --cwd ./frontend && bun run build && bun run --cwd ./frontend build",
-		"dev": "cd ./frontend && bun run dev"
+		"build-frontend": "bun run build && bun run --cwd ./frontend build",
+		"dev": "cd ./frontend && bun run dev",
+		"postinstall": "bun install --cwd ./frontend"
 	}
 }
